@@ -3,12 +3,14 @@ import { SYSTEM_FIXED_APP_ADMIN_USER_ID, SYSTEM_FIXED_NORMAL_USER_ID } from '@/a
 import applicationsUrl from '@/assets/images/sider/applications.svg'
 import appStoreUrl from '@/assets/images/sider/appStore.svg'
 import projectUrl from '@/assets/images/sider/project.svg'
+import aiStoreUrl from '@/assets/images/sider/aiStore.svg'
 import type { RouteConfig } from './types'
 
 const MyApp = lazy(() => import('../pages/MyApp'))
 const AppStore = lazy(() => import('../pages/AppStore'))
 const ProjectManagement = lazy(() => import('../pages/ProjectManagement'))
 const Project = lazy(() => import('../pages/ProjectManagement/Project'))
+const DigitalEmployee = lazy(() => import('../pages/DigitalEmployee'))
 
 /**
  * 路由配置数组
@@ -40,6 +42,23 @@ export const routeConfigs: RouteConfig[] = [
     iconUrl: appStoreUrl,
     requiredRoleIds: [SYSTEM_FIXED_APP_ADMIN_USER_ID],
     element: <AppStore />,
+    showInSidebar: true,
+    handle: {
+      layout: {
+        hasSider: true,
+        hasHeader: true,
+        siderType: 'store',
+        headerType: 'store',
+      },
+    },
+  },
+  {
+    path: 'store/digital-employee',
+    key: 'digital-employee',
+    label: '数字员工',
+    iconUrl: aiStoreUrl,
+    requiredRoleIds: [SYSTEM_FIXED_NORMAL_USER_ID],
+    element: <DigitalEmployee />,
     showInSidebar: true,
     handle: {
       layout: {

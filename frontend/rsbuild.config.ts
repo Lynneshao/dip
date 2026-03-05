@@ -11,12 +11,15 @@ const proxyAgent = isHttpsTarget
   ? new HttpsAgent({ rejectUnauthorized: false })
   : undefined
 
-const proxyBase = {
-  target: process.env.DEBUG_ORIGIN,
-  changeOrigin: true,
-  secure: false,
-  ...(proxyAgent && { agent: proxyAgent }),
-}
+// 如果没有配置 DEBUG_ORIGIN，就不配置代理
+const proxyBase = process.env.DEBUG_ORIGIN
+  ? {
+      target: process.env.DEBUG_ORIGIN,
+      changeOrigin: true,
+      secure: false,
+      ...(proxyAgent && { agent: proxyAgent }),
+    }
+  : undefined
 
 // Docs: https://rsbuild.rs/config/
 // 确保 assetPrefix 始终以 / 结尾，而 BASE_PATH 不带尾部斜杠
@@ -58,36 +61,39 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    host: '0.0.0.0',
     // 配置代理，解决远程微应用 CORS 问题
-    proxy: {
-      // 开发环境：将 API 请求代理到远程服务器
-      // 登录相关路由由中间件插件处理，不走代理
-      '/api/dip-hub': {
-        ...proxyBase,
-        // 排除登录相关路由，这些由中间件插件处理
-        bypass(req) {
-          const url = req.url || ''
-          if (
-            url.includes('/v1/login') ||
-            url.includes('/v1/logout') ||
-            url.includes('/v1/login/callback') ||
-            url.includes('/v1/logout/callback')
-          ) {
-            // 返回 false 表示不使用代理，由中间件处理
-            return false
-          }
-          return undefined // 其他路由继续使用代理
-        },
-      },
-      '/api/dip-studio':proxyBase,      
-      '/api/mdl-data-model': proxyBase,
-      '/api/agent-factory': proxyBase,
-      '/api/deploy-web-service': proxyBase,
-      '/api/ontology-manager': proxyBase,
-      // 剩余所有 API 请求代理到 DEBUG_ORIGIN
-      '/api/*': proxyBase,
-      '/oauth2/*': proxyBase,
-    },
+    proxy: proxyBase
+      ? {
+          // 开发环境：将 API 请求代理到远程服务器
+          // 登录相关路由由中间件插件处理，不走代理
+          '/api/dip-hub': {
+            ...proxyBase,
+            // 排除登录相关路由，这些由中间件插件处理
+            bypass(req) {
+              const url = req.url || ''
+              if (
+                url.includes('/v1/login') ||
+                url.includes('/v1/logout') ||
+                url.includes('/v1/login/callback') ||
+                url.includes('/v1/logout/callback')
+              ) {
+                // 返回 false 表示不使用代理，由中间件处理
+                return false
+              }
+              return undefined // 其他路由继续使用代理
+            },
+          },
+          '/api/dip-studio': proxyBase,
+          '/api/mdl-data-model': proxyBase,
+          '/api/agent-factory': proxyBase,
+          '/api/deploy-web-service': proxyBase,
+          '/api/ontology-manager': proxyBase,
+          // 剩余所有 API 请求代理到 DEBUG_ORIGIN
+          '/api/*': proxyBase,
+          '/oauth2/*': proxyBase,
+        }
+      : undefined,
   },
   plugins: [
     pluginReact(),
