@@ -106,7 +106,7 @@ export const routeConfigs: RouteConfig[] = [
     },
   },
   {
-    path: 'studio/digital-employee/:id',
+    path: 'studio/digital-employee/*',
     key: 'digital-employee-detail',
     label: '数字员工详情',
     requiredRoleIds: [SYSTEM_FIXED_NORMAL_USER_ID],
@@ -120,13 +120,5 @@ export const routeConfigs: RouteConfig[] = [
         headerType: 'studio',
       },
     },
-    children: [
-      {
-        path: ':tab',
-        key: 'digital-employee-detail-tab',
-        element: <DigitalEmployeeDetail />,
-        showInSidebar: false,
-      },
-    ],
   },
 ]

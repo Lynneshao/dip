@@ -115,7 +115,7 @@ const DigitalEmployee = () => {
       form.resetFields()
       message.success('数字员工创建成功')
       // 跳转到详情页
-      navigate(`/studio/digital-employee/${newEmployee.id}/setting`)
+      window.location.href = `/studio/digital-employee/${newEmployee.id}/setting`
     })
   }
 
@@ -154,7 +154,7 @@ const DigitalEmployee = () => {
     if ((e.target as HTMLElement).closest('.ant-btn, .ant-popover')) {
       return
     }
-    navigate(`/studio/digital-employee/${id}/setting`)
+    window.location.href = `/studio/digital-employee/${id}/setting`
   }
 
   const renderEmployeeCard = (employee: typeof mockEmployees[0]) => {

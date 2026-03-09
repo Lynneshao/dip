@@ -17,36 +17,36 @@ const mockEmployeeDetail = {
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-const getMenuItems = (employeeId: string, navigate: any): MenuItem[] => [
+const getMenuItems = (employeeId: string): MenuItem[] => [
   {
     key: 'setting',
     icon: <SettingOutlined />,
     label: '设定',
-    onClick: () => navigate(`/studio/digital-employee/${employeeId}/setting`),
+    onClick: () => window.location.href = `/studio/digital-employee/${employeeId}/setting`,
   },
   {
     key: 'knowledge',
     icon: <BookOutlined />,
     label: '知识',
-    onClick: () => navigate(`/studio/digital-employee/${employeeId}/knowledge`),
+    onClick: () => window.location.href = `/studio/digital-employee/${employeeId}/knowledge`,
   },
   {
     key: 'skill',
     icon: <ThunderboltOutlined />,
     label: '技能',
-    onClick: () => navigate(`/studio/digital-employee/${employeeId}/skill`),
+    onClick: () => window.location.href = `/studio/digital-employee/${employeeId}/skill`,
   },
   {
     key: 'plan',
     icon: <CalendarOutlined />,
     label: '计划',
-    onClick: () => navigate(`/studio/digital-employee/${employeeId}/plan`),
+    onClick: () => window.location.href = `/studio/digital-employee/${employeeId}/plan`,
   },
   {
     key: 'session',
     icon: <MessageOutlined />,
     label: '会话',
-    onClick: () => navigate(`/studio/digital-employee/${employeeId}/session`),
+    onClick: () => window.location.href = `/studio/digital-employee/${employeeId}/session`,
   },
 ]
 
@@ -270,7 +270,7 @@ const KnowledgePage = () => {
           rowKey="id"
           pagination={{ pageSize: 10 }}
         />
-      </div>
+      </Card>
 
       <div className="mt-4 flex-shrink-0">
         <Card 
@@ -326,8 +326,6 @@ const KnowledgePage = () => {
 import { PlusOutlined, PlayCircleOutlined, CodeOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Input, List, Card, Modal, Form, Input as AntInput, Space, Tag, message, Tabs, Collapse, Steps } from 'antd'
 import { useState } from 'react'
-import SyntaxHighlighter from 'react-syntax-highlighter'
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 const { TextArea } = AntInput
 const { TabPane } = Tabs
@@ -547,9 +545,9 @@ def execute():
                 </div>
                 <Collapse ghost>
                   <Collapse.Panel header="查看脚本" key="1">
-                    <SyntaxHighlighter language="python" style={vs2015} customStyle={{ margin: 0 }}>
-                      {skill.script}
-                    </SyntaxHighlighter>
+                    <pre className="bg-gray-900 text-white p-4 rounded overflow-auto max-h-60 text-sm">
+                      <code>{skill.script}</code>
+                    </pre>
                   </Collapse.Panel>
                 </Collapse>
               </Card>
@@ -609,9 +607,9 @@ def execute():
             <p className="mb-4"><strong>名称：</strong>{generatedSkill.name}</p>
             <p className="mb-4"><strong>描述：</strong>{generatedSkill.description}</p>
             <p className="mb-2 font-bold">脚本：</p>
-            <SyntaxHighlighter language="python" style={vs2015} customStyle={{ maxHeight: 300 }}>
-              {generatedSkill.script}
-            </SyntaxHighlighter>
+            <pre className="bg-gray-900 text-white p-4 rounded overflow-auto max-h-60 text-sm">
+              <code>{generatedSkill.script}</code>
+            </pre>
           </div>
         )}
 
@@ -674,9 +672,9 @@ def execute():
             {testResult && (
               <div>
                 <label className="block mb-2 font-medium">执行结果</label>
-                <SyntaxHighlighter language="json" style={vs2015} customStyle={{ maxHeight: 300 }}>
-                  {testResult}
-                </SyntaxHighlighter>
+                <pre className="bg-gray-900 text-white p-4 rounded overflow-auto max-h-60 text-sm">
+                  <code>{testResult}</code>
+                </pre>
               </div>
             )}
           </div>
@@ -1440,7 +1438,9 @@ const getPageMap = (employee: any, onSaveSetting: (content: string) => void): Re
 
 const DigitalEmployeeDetail = () => {
   const navigate = useNavigate()
-  const { id, tab = 'setting' } = useParams<{ id: string; tab?: string }>()
+  const params = useParams()
+  const id = params.id || window.location.pathname.split('/')[3]
+  const tab = params.tab || window.location.pathname.split('/')[4] || 'setting'
   const [loading, setLoading] = useState(true)
   const [employee, setEmployee] = useState(mockEmployeeDetail)
   const [, messageContextHolder] = message.useMessage()
@@ -1453,19 +1453,13 @@ const DigitalEmployeeDetail = () => {
   }
 
   useEffect(() => {
-    // 如果没有 tab 参数，默认跳转到 setting
-    if (!tab) {
-      navigate(`/studio/digital-employee/${id}/setting`, { replace: true })
-      return
-    }
-
     // 模拟加载数据
     setLoading(true)
     setTimeout(() => {
       setEmployee(mockEmployeeDetail)
       setLoading(false)
     }, 1000)
-  }, [id, tab, navigate])
+  }, [id])
 
   const handleBack = () => {
     navigate('/studio/digital-employee')
@@ -1474,7 +1468,10 @@ const DigitalEmployeeDetail = () => {
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <Spin size="large" />
+        <div className="text-center">
+          <Spin size="large" />
+          <p className="mt-4">调试信息：id={id}, tab={tab}</p>
+        </div>
       </div>
     )
   }
@@ -1512,7 +1509,7 @@ const DigitalEmployeeDetail = () => {
           <Menu
             mode="inline"
             selectedKeys={[tab as string]}
-            items={getMenuItems(id as string, navigate)}
+            items={getMenuItems(id as string)}
             style={{ border: 'none' }}
           />
         </div>
