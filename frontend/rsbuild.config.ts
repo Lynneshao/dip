@@ -23,7 +23,7 @@ const proxyBase = process.env.DEBUG_ORIGIN
 
 // Docs: https://rsbuild.rs/config/
 // 确保 assetPrefix 始终以 / 结尾，而 BASE_PATH 不带尾部斜杠
-const rawPublicPath = process.env.PUBLIC_PATH || '/dip-hub/'
+const rawPublicPath = process.env.PUBLIC_PATH || '/'
 const assetPrefix = rawPublicPath.endsWith('/')
   ? rawPublicPath
   : `${rawPublicPath}/`
