@@ -11,6 +11,7 @@ const AppStore = lazy(() => import('../pages/AppStore'))
 const ProjectManagement = lazy(() => import('../pages/ProjectManagement'))
 const Project = lazy(() => import('../pages/ProjectManagement/Project'))
 const DigitalEmployee = lazy(() => import('../pages/DigitalEmployee'))
+const DigitalEmployeeDetail = lazy(() => import('../pages/DigitalEmployee/Detail'))
 
 /**
  * 路由配置数组
@@ -42,23 +43,6 @@ export const routeConfigs: RouteConfig[] = [
     iconUrl: appStoreUrl,
     requiredRoleIds: [SYSTEM_FIXED_APP_ADMIN_USER_ID],
     element: <AppStore />,
-    showInSidebar: true,
-    handle: {
-      layout: {
-        hasSider: true,
-        hasHeader: true,
-        siderType: 'store',
-        headerType: 'store',
-      },
-    },
-  },
-  {
-    path: 'store/digital-employee',
-    key: 'digital-employee',
-    label: '数字员工',
-    iconUrl: aiStoreUrl,
-    requiredRoleIds: [SYSTEM_FIXED_NORMAL_USER_ID],
-    element: <DigitalEmployee />,
     showInSidebar: true,
     handle: {
       layout: {
@@ -103,5 +87,46 @@ export const routeConfigs: RouteConfig[] = [
         headerType: 'studio',
       },
     },
+  },
+  {
+    path: 'studio/digital-employee',
+    key: 'digital-employee',
+    label: '数字员工',
+    iconUrl: aiStoreUrl,
+    requiredRoleIds: [SYSTEM_FIXED_NORMAL_USER_ID],
+    element: <DigitalEmployee />,
+    showInSidebar: true,
+    handle: {
+      layout: {
+        hasSider: true,
+        hasHeader: true,
+        siderType: 'studio',
+        headerType: 'studio',
+      },
+    },
+  },
+  {
+    path: 'studio/digital-employee/:id',
+    key: 'digital-employee-detail',
+    label: '数字员工详情',
+    requiredRoleIds: [SYSTEM_FIXED_NORMAL_USER_ID],
+    element: <DigitalEmployeeDetail />,
+    showInSidebar: false,
+    handle: {
+      layout: {
+        hasSider: true,
+        hasHeader: true,
+        siderType: 'studio',
+        headerType: 'studio',
+      },
+    },
+    children: [
+      {
+        path: ':tab',
+        key: 'digital-employee-detail-tab',
+        element: <DigitalEmployeeDetail />,
+        showInSidebar: false,
+      },
+    ],
   },
 ]
