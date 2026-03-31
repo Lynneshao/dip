@@ -128,7 +128,7 @@ const BaseSider = ({ collapsed, onCollapse, type }: BaseSiderProps) => {
 
       // 2. 钉住的应用（显示在 MyApp 下面，排除问数，避免重复）
       pinnedMicroApps
-        .filter((app) => app.id !== wenshuAppInfo?.id)
+        .filter((app) => app.key !== wenshuAppInfo?.key)
         .forEach((app) => {
           items.push({
             key: `micro-app-${app.key}`,

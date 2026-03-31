@@ -32,7 +32,9 @@ export interface MicroAppProps {
 
   /** ========== 应用信息 ========== */
   application: {
-    /** 应用 ID */
+    /** 应用 package 唯一标识（与主应用路由、API 一致） */
+    key: string
+    /** 应用数字 ID（后端资源 ID，兼容依赖旧字段的微应用） */
     id: number
     /** 应用名称 */
     name: string

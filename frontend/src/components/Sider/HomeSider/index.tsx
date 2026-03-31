@@ -83,7 +83,7 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
 
     // 钉住的应用（排除问数，避免重复）
     pinnedMicroApps
-      .filter((app) => app.id !== wenshuAppInfo?.id)
+      .filter((app) => app.key !== wenshuAppInfo?.key)
       .forEach((app) => {
         items.push({
           key: `micro-app-${app.key}`,

@@ -71,6 +71,7 @@ const MicroAppComponent = ({ appBasicInfo, homeRoute }: MicroAppComponentProps) 
       // ========== 应用信息 ==========
       application: {
         // 应用信息在微应用加载时确定，不会在运行时变化
+        key: appBasicInfo.key,
         id: appBasicInfo.id,
         name: appBasicInfo.name,
         icon: appBasicInfo.icon || '',
@@ -121,7 +122,7 @@ const MicroAppComponent = ({ appBasicInfo, homeRoute }: MicroAppComponentProps) 
         return onMicroAppGlobalStateChange(callback, fireImmediately)
       },
     }),
-    [appBasicInfo.routeBasename, userInfo?.id],
+    [appBasicInfo.routeBasename, appBasicInfo.key, appBasicInfo.id, userInfo?.id],
   )
 
   // 更新 ref，确保 useEffect 能访问到最新的 props
