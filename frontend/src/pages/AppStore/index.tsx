@@ -81,10 +81,10 @@ const AppStore = () => {
               ),
               onOk: async () => {
                 try {
-                  await deleteApplications(_app.id)
+                  await deleteApplications(_app.key)
                   messageApi.success('卸载成功')
                   handleRefresh()
-                  unpinMicroApp(_app.id, false)
+                  unpinMicroApp(_app.key, false)
                 } catch (err: any) {
                   if (err?.description) {
                     messageApi.error(err.description)
@@ -103,8 +103,8 @@ const AppStore = () => {
 
           /** 运行应用 */
           case AppStoreActionEnum.Run:
-            setAppSource(_app.id, 'store')
-            navigate(`/application/${_app.id}`)
+            setAppSource(_app.key, 'store')
+            navigate(`/application/${_app.key}`)
             break
 
           /** 授权管理 */

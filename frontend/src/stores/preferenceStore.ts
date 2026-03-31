@@ -19,13 +19,13 @@ interface PreferenceState {
   /** 从后端获取钉住的微应用列表 */
   fetchPinnedMicroApps: () => Promise<void>
   /** 添加钉住的微应用 */
-  pinMicroApp: (appId: number) => Promise<boolean>
+  pinMicroApp: (appKey: string) => Promise<boolean>
   /** 取消钉住的微应用 */
-  unpinMicroApp: (appId: number, needRequest?: boolean) => Promise<boolean>
+  unpinMicroApp: (appKey: string, needRequest?: boolean) => Promise<boolean>
   /** 检查是否已钉住 */
-  isPinned: (appId: number) => boolean
+  isPinned: (appKey: string) => boolean
   /** 切换钉住状态 */
-  togglePin: (appId: number) => Promise<boolean>
+  togglePin: (appKey: string) => Promise<boolean>
 }
 
 // 缓存正在进行中的 pinned 微应用加载 Promise，避免重复请求
@@ -63,14 +63,14 @@ export const usePreferenceStore = create<PreferenceState>()((set, get) => ({
     return fetchPinnedMicroAppsPromise
   },
 
-  pinMicroApp: async (appId: number) => {
+  pinMicroApp: async (appKey: string) => {
     const { pinnedMicroApps } = get()
-    if (pinnedMicroApps.some((app) => app.id === appId)) {
+    if (pinnedMicroApps.some((app) => app.key === appKey)) {
       return true
     }
 
     try {
-      await pinMicroAppApi({ appId, pinned: true })
+      await pinMicroAppApi({ appKey, pinned: true })
       await get().fetchPinnedMicroApps()
       message.success('固定成功')
       return true
@@ -82,18 +82,18 @@ export const usePreferenceStore = create<PreferenceState>()((set, get) => ({
     }
   },
 
-  unpinMicroApp: async (appId: number, needRequest = true) => {
+  unpinMicroApp: async (appKey: string, needRequest = true) => {
     const { pinnedMicroApps } = get()
-    if (!pinnedMicroApps.some((app) => app.id === appId)) {
+    if (!pinnedMicroApps.some((app) => app.key === appKey)) {
       return true
     }
     if (!needRequest) {
-      set({ pinnedMicroApps: pinnedMicroApps.filter((app) => app.id !== appId) })
+      set({ pinnedMicroApps: pinnedMicroApps.filter((app) => app.key !== appKey) })
       return true
     }
     try {
-      await pinMicroAppApi({ appId, pinned: false })
-      set({ pinnedMicroApps: pinnedMicroApps.filter((app) => app.id !== appId) })
+      await pinMicroAppApi({ appKey, pinned: false })
+      set({ pinnedMicroApps: pinnedMicroApps.filter((app) => app.key !== appKey) })
       message.success('已取消固定')
       return true
     } catch (error: any) {
@@ -104,16 +104,16 @@ export const usePreferenceStore = create<PreferenceState>()((set, get) => ({
     }
   },
 
-  isPinned: (appId: number) => {
-    return get().pinnedMicroApps.some((app) => app.id === appId)
+  isPinned: (appKey: string) => {
+    return get().pinnedMicroApps.some((app) => app.key === appKey)
   },
 
-  togglePin: async (appId: number) => {
+  togglePin: async (appKey: string) => {
     const { isPinned, pinMicroApp, unpinMicroApp } = get()
-    if (isPinned(appId)) {
-      return await unpinMicroApp(appId)
+    if (isPinned(appKey)) {
+      return await unpinMicroApp(appKey)
     } else {
-      return await pinMicroApp(appId)
+      return await pinMicroApp(appKey)
     }
   },
 }))

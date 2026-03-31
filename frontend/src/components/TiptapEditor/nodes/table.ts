@@ -30,6 +30,9 @@ export const Table = TTable.extend<TableOptions>({
     return {
       ...parentOptions,
       resizable: true,
+      // 避免拖拽最右侧边缘把整张表拉出容器：
+      // 只允许拖拽内部列分割线，最后一列宽度跟随自适应。
+      lastColumnResizable: false,
       HTMLAttributes: parentOptions.HTMLAttributes ?? {},
       dictionary: {
         name: '表格',

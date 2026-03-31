@@ -11,8 +11,7 @@ import { useMicroAppStore } from '@/stores/microAppStore'
  */
 export const AppMenu = () => {
   const navigate = useNavigate()
-  const { appId } = useParams<{ appId: string }>()
-  const idNum = useMemo(() => (appId ? Number(appId) : NaN), [appId])
+  const { appKey } = useParams<{ appKey: string }>()
   const { fetchPinnedMicroApps, loading, pinnedMicroApps, wenshuAppInfo } = usePreferenceStore()
   const { setAppSource } = useMicroAppStore()
   const appSourceMap = useMicroAppStore((state) => state.appSourceMap)
@@ -23,12 +22,12 @@ export const AppMenu = () => {
   }
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    const app = [wenshuAppInfo, ...pinnedMicroApps].find((item) => item?.id === Number(key))
-    if (app?.id) {
-      const type = (!Number.isNaN(idNum) ? appSourceMap[idNum] : null) || 'home'
-      setAppSource(app.id, type)
+    const app = [wenshuAppInfo, ...pinnedMicroApps].find((item) => item?.key === key)
+    if (app?.key) {
+      const type = (appKey ? appSourceMap[appKey] : null) || 'home'
+      setAppSource(app.key, type)
       // 以新标签页形式打开应用
-      navigate(`/application/${app.id}`)
+      navigate(`/application/${app.key}`)
     }
   }
 
@@ -36,7 +35,7 @@ export const AppMenu = () => {
     const items: MenuProps['items'] = []
     if (wenshuAppInfo) {
       items.push({
-        key: wenshuAppInfo.id,
+        key: wenshuAppInfo.key,
         icon: <AppIcon icon={wenshuAppInfo.icon} name={wenshuAppInfo.name} size={16} />,
         label: wenshuAppInfo.name,
       })
@@ -44,7 +43,7 @@ export const AppMenu = () => {
     if (Array.isArray(pinnedMicroApps)) {
       items.push(
         ...pinnedMicroApps.map((app) => ({
-          key: app.id,
+          key: app.key,
           icon: <AppIcon icon={app.icon} name={app.name} size={16} />,
           label: app.name,
         })),

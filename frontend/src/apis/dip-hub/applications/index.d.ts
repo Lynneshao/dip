@@ -360,14 +360,14 @@ export interface ApplicationConfigRequest {
 
 /** 获取钉住的微应用列表响应 */
 export interface PinnedMicroAppsResponse {
-  /** 钉住的微应用 ID 列表 */
-  appIds: number[]
+  /** 钉住的微应用 key 列表 */
+  appKeys: string[]
 }
 
 /** 钉住/取消钉住微应用参数 */
 export interface PinMicroAppParams {
-  /** 应用 ID */
-  appId: number
+  /** 应用 package 唯一标识 */
+  appKey: string
   /** 是否钉住 */
   pinned: boolean
 }

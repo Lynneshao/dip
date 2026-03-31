@@ -44,18 +44,18 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
   const roleIds = useMemo(() => new Set<string>([]), [])
 
   const handleOpenApp = useCallback(
-    (appId: number) => {
+    (appKey: string) => {
       // 记录来源类型，并在容器中根据 Store 读取，不再依赖 URL 参数
-      setAppSource(appId, 'home')
-      navigate(`/application/${appId}`)
+      setAppSource(appKey, 'home')
+      navigate(`/application/${appKey}`)
     },
     [navigate, setAppSource],
   )
 
   const handleUnpin = useCallback(
-    async (appId: number) => {
+    async (appKey: string) => {
       try {
-        await unpinMicroApp(appId)
+        await unpinMicroApp(appKey)
         messageApi.success('已取消钉住')
       } catch (error) {
         console.error('Failed to unpin micro app:', error)
@@ -72,12 +72,12 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
     // 问数应用始终排在第一位（若存在）
     if (wenshuAppInfo) {
       items.push({
-        key: `micro-app-${wenshuAppInfo.id}`,
+        key: `micro-app-${wenshuAppInfo.key}`,
         label: wenshuAppInfo.name,
         icon: (
           <AppIcon icon={wenshuAppInfo.icon} name={wenshuAppInfo.name} size={16} shape="square" />
         ),
-        onClick: () => handleOpenApp(wenshuAppInfo.id),
+        onClick: () => handleOpenApp(wenshuAppInfo.key),
       })
     }
 
@@ -86,7 +86,7 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
       .filter((app) => app.id !== wenshuAppInfo?.id)
       .forEach((app) => {
         items.push({
-          key: `micro-app-${app.id}`,
+          key: `micro-app-${app.key}`,
           label: (
             <div className="w-full h-full flex justify-between items-center">
               {app.name}
@@ -95,14 +95,14 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
                   className="w-6 h-6 text-base flex items-center justify-center rounded text-[var(--dip-warning-color)] pin-icon opacity-0 hover:bg-[rgba(0,0,0,0.04)]"
                   onClick={(e) => {
                     e.stopPropagation()
-                    handleUnpin(app.id)
+                    handleUnpin(app.key)
                   }}
                 />
               </Popover>
             </div>
           ),
           icon: <AppIcon icon={app.icon} name={app.name} size={16} shape="square" />,
-          onClick: () => handleOpenApp(app.id),
+          onClick: () => handleOpenApp(app.key),
         })
       })
 
@@ -202,17 +202,21 @@ const HomeSider = ({ collapsed, onCollapse }: HomeSiderProps) => {
 
   const selectedKeys = useMemo(() => {
     const path = location.pathname
-    const match = path.match(/^\/application\/(\d+)/)
+    const match = path.match(/^\/application\/([^/]+)/)
     if (!match) {
       return []
     }
 
-    const appId = Number(match[1])
-    const key = `micro-app-${appId}`
+    const segment = match[1]
+    if (segment === 'error') {
+      return []
+    }
+
+    const key = `micro-app-${segment}`
 
     const exists =
-      (wenshuAppInfo && wenshuAppInfo.id === appId) ||
-      pinnedMicroApps.some((app) => app.id === appId)
+      (wenshuAppInfo && wenshuAppInfo.key === segment) ||
+      pinnedMicroApps.some((app) => app.key === segment)
 
     return exists ? [key] : []
   }, [location.pathname, pinnedMicroApps, wenshuAppInfo])

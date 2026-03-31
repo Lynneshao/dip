@@ -57,22 +57,22 @@ const MyApp = () => {
     async (action: string, _app: ApplicationInfo) => {
       switch (action) {
         case MyAppActionEnum.Fix: {
-          const result = await togglePin(_app.id)
+          const result = await togglePin(_app.key)
           if (result) {
             updateApp({ ..._app, pinned: true })
           }
           break
         }
         case MyAppActionEnum.Unfix: {
-          const result = await togglePin(_app.id)
+          const result = await togglePin(_app.key)
           if (result) {
             updateApp({ ..._app, pinned: false })
           }
           break
         }
         case MyAppActionEnum.Use:
-          setAppSource(_app.id, 'store')
-          navigate(`/application/${_app.id}`)
+          setAppSource(_app.key, 'store')
+          navigate(`/application/${_app.key}`)
           break
         default:
           break

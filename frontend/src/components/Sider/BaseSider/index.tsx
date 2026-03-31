@@ -43,19 +43,19 @@ const BaseSider = ({ collapsed, onCollapse, type }: BaseSiderProps) => {
 
   const { setAppSource } = useMicroAppStore()
   const handleOpenApp = useCallback(
-    (appId: number) => {
-      // 记录来源类型，针对特定 appId 进行持久化
-      setAppSource(appId, type)
+    (appKey: string) => {
+      // 记录来源类型，针对特定应用 key 进行持久化
+      setAppSource(appKey, type)
       // 移除 URL 中的 type 参数，完全依赖 Store 持久化
-      navigate(`/application/${appId}`)
+      navigate(`/application/${appKey}`)
     },
     [navigate, type, setAppSource],
   )
 
   const handleUnpin = useCallback(
-    async (appId: number) => {
+    async (appKey: string) => {
       try {
-        await unpinMicroApp(appId)
+        await unpinMicroApp(appKey)
         messageApi.success('已取消钉住')
       } catch (error) {
         console.error('Failed to unpin micro app:', error)
@@ -72,11 +72,10 @@ const BaseSider = ({ collapsed, onCollapse, type }: BaseSiderProps) => {
       return firstVisibleRoute?.key || 'my-app'
     }
 
-    // 检查是否是应用路由（/application/:appId）
-    const appMatch = pathname.match(/^\/application\/(\d+)/)
-    if (appMatch) {
-      const appId = Number(appMatch[1])
-      return `micro-app-${appId}`
+    // 检查是否是应用路由（/application/:appKey）
+    const appMatch = pathname.match(/^\/application\/([^/]+)/)
+    if (appMatch && appMatch[1] !== 'error') {
+      return `micro-app-${appMatch[1]}`
     }
 
     const route = getRouteByPath(pathname)
@@ -132,7 +131,7 @@ const BaseSider = ({ collapsed, onCollapse, type }: BaseSiderProps) => {
         .filter((app) => app.id !== wenshuAppInfo?.id)
         .forEach((app) => {
           items.push({
-            key: `micro-app-${app.id}`,
+            key: `micro-app-${app.key}`,
             label: (
               <div className="w-full h-full flex justify-between items-center">
                 {app.name}
@@ -141,14 +140,14 @@ const BaseSider = ({ collapsed, onCollapse, type }: BaseSiderProps) => {
                     className="w-6 h-6 text-base flex items-center justify-center rounded text-[var(--dip-warning-color)] pin-icon opacity-0 hover:bg-[rgba(0,0,0,0.04)]"
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleUnpin(app.id)
+                      handleUnpin(app.key)
                     }}
                   />
                 </Popover>
               </div>
             ),
             icon: <AppIcon icon={app.icon} name={app.name} size={16} shape="square" />,
-            onClick: () => handleOpenApp(app.id),
+            onClick: () => handleOpenApp(app.key),
           })
         })
 
